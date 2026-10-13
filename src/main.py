@@ -29,12 +29,19 @@ def load_config():
 # check network status
 def check_wired(test_url="http://www.apple.com/library/test/success.html"):
     try:
-        response = requests.get(test_url, timeout=3)
-        if response.status_code == 200:
+        response = requests.head(test_url, timeout=3, allow_redirects=False)
+        if response.status_code in [ 200, 204]:
+            # print("[DEBUG][check_wired] reponse.status_code ==", response.status_code)
             return True
-    except requests.RequestException:
-        pass
-    return False
+        elif 300 <= response.status_code < 400:
+            # print("[DEBUG][check_wired] reponse.status_code ==", response.status_code)
+            return False
+        else:
+            # print("[DEBUG][check_wired] other exception status code ==", response.status_code)
+            return False
+    except requests.exceptions.RequestException as e:
+        # print("[DEBUG][check_wired] disconnected, timeout or error:", e)
+        return False
 
 def grant_lan_ip():
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -87,9 +94,9 @@ def login(config):
         print(f"[ERROR] Get request failed: {e}")
 
 if __name__ == "__main__":
-    # if check_wired():
-    #     print("[INFO] Wired, No need to re-login.")
-    # else:
+    if check_wired():
+        print("[INFO] Wired, No need to re-login.")
+    else:
         print("[INFO] Disconnected from Wired or not authenticated, trying to login...")
         if os.path.exists(config_path):
             config = load_config()
