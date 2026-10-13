@@ -1,0 +1,10 @@
+__pychace__
+*.py[cod]
+*$py.class
+
+build/
+dist/
+lib /
+lib64/
+var/
+src/config.json
