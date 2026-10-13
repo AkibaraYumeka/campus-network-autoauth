@@ -105,11 +105,3 @@ if __name__ == "__main__":
             print(f"[INFO] Generated config file at {config_path}, run the script again after wriring you account and password on it.")
             exit(0)
         login(config)
-
-"""
-request url
-    http://192.168.16.41:801/eportal/portal/login?callback=dr1003&login_method=1&user_account=,0,9872134@telecom&user_password=quickbrownfox&wlan_user_ip=172.24.150.99&wlan_user_ipv6=&wlan_user_mac=000000000000&wlan_ac_ip=&wlan_ac_name=&jsVersion=4.1.3&terminal_type=1&lang=zh-cn&lang=zh&v=3020
-
-return
-    dr1003({"result":1,"msg":"Portal协议认证成功！"});
-"""
