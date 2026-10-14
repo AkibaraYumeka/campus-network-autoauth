@@ -1,2 +1,11 @@
-name = "python-learning"
+name = "campus-network-autoauth"
 version = "1.0.0"
+description = "An auto login script for campus network authentication."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "AkibaraYumeka", email = "AkibaraYumeka@outlook.jp" }
+]
+dependencies = [
+    "requests"
+]
