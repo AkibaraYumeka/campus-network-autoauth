@@ -8,6 +8,7 @@ An auto login script for campus network authentication.
 ## Requirements
 
 Python 3.11 or above
+
 `requests` lib
 
 ## How to use
