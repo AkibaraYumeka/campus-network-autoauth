@@ -6,7 +6,7 @@ from loguru import logger
 # TODO: add random UA
 
 def check_wired(test_url: str="http://www.apple.com/library/test/success.html") -> bool:
-    """Check whather the Internet is accessible."""
+    """Check whether the Internet is accessible."""
 
     try:
         response = requests.head(test_url, timeout=3, allow_redirects=False)
