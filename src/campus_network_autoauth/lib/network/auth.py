@@ -5,22 +5,22 @@ from loguru import logger
 
 # TODO: add random UA
 
-def check_wired(test_url: str="http://www.apple.com/library/test/success.html") -> bool:
+def check_wired(test_url: str="http://connect.rom.miui.com/generate_204") -> bool:
     """Check whether the Internet is accessible."""
 
     try:
-        response = requests.head(test_url, timeout=3, allow_redirects=False)
-        if response.status_code in [ 200, 204]:
-            logger.debug(f"reponse.status_code == {response.status_code}")
+        response = requests.head(test_url, timeout=3, allow_redirects=False, stream=True)
+        if response.status_code == 204:
+            logger.debug(f"Network check success. Status: {response.status_code}")
             return True
-        elif 300 <= response.status_code < 400:
-            logger.debug(f"reponse.status_code == {response.status_code}")
+        elif 300 <= response.status_code < 400 or response.status_code == 200:
+            logger.debug(f"Network intercepted by gateway. Status: {response.status_code}")
             return False
         else:
-            logger.debug(f"Other exception status code == {response.status_code}")
+            logger.debug(f"Unexpeted status code from {test_url}: {response.status_code}")
             return False
     except requests.exceptions.RequestException as e:
-        logger.debug("Disconnected, timeout or error:", e)
+        logger.debug("Disconnected or timeout:", e)
         return False
 
 def grant_lan_ip() -> str:
@@ -46,13 +46,12 @@ def login(config: dict) -> bool:
         "user_password": config["password"],
         "wlan_user_ip": grant_lan_ip(),
         "wlan_user_ipv6": "",
-        "wlan_user_mac": "000000000000",
+        "wlan_user_mac": "",
         "wlan_ac_ip": "",
         "wlan_ac_name": "",
         "jsVersion": "4.1.3",
         "terminal_type": "1", # 1 = pc
-        "lang": "zh-cn",
-        "v": "3020"
+        "lang": "zh-cn"
     }
 
     base_url = config["auth_url"]
