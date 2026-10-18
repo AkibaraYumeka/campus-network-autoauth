@@ -2,9 +2,10 @@ __pychace__
 *.py[cod]
 *$py.class
 
+.venv/
 build/
 dist/
 lib /
 lib64/
 var/
-src/config.toml
+data/config.toml

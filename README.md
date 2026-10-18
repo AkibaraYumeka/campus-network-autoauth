@@ -2,19 +2,39 @@
 
 ## Introduction
 
-An auto login script for campus network authentication.
-(Dr.com)
+An auto-login script for `Dr.com` campus network authentication.
+
+> Tested on a campus network
 
 ## Requirements
 
-Python 3.11 or above
-
-`requests` lib
+- Python 3.13+
+- `uv` package manager
 
 ## How to use
 
-Copy `src/config.toml.example` to `src/config.json`(optional).
+Optionally, copy `data/config.toml.example` to `data/config.toml`.
 
-Write your username, password and isp on it.
+Write your username, password, and ISP to `data/config.toml`.
 
-Use Python to execute `src/main.py`.
+### Run the binary
+
+...
+
+### Run the script
+
+```sh
+# sync dependencies
+uv sync
+
+# execute the script
+uv run campus-network-autoauth
+```
+
+## Build from source
+
+...
+
+## License
+
+[MIT License](./LICENSE)

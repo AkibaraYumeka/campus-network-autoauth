@@ -1,12 +1,20 @@
+[project]
 name = "campus-network-autoauth"
-version = "1.1.0"
-description = "An auto login script for campus network authentication."
+version = "1.2.0"
+description = "An auto-login script for Dr.com campus network authentication."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.13"
 authors = [
     { name = "AkibaraYumeka", email = "AkibaraYumeka@outlook.jp" }
 ]
 dependencies = [
-    "tomlkit",
-    "requests"
+    "requests>=2.34.2",
+    "tomlkit>=0.15.2",
 ]
+
+[project.scripts]
+campus-network-autoauth = "campus_network_autoauth:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
