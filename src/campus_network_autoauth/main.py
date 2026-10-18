@@ -10,7 +10,7 @@ from campus_network_autoauth.lib.path import CONFIG_PATH, LOG_DIR
 # TODO: auto daemon
 
 def main() -> None:
-    setup_logger(LOG_DIR, debug=True)
+    setup_logger(LOG_DIR)
 
     if check_wired():
         logger.info("Wired, No need to re-login.")
