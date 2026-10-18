@@ -1,6 +1,6 @@
 [project]
 name = "campus-network-autoauth"
-version = "1.2.1"
+version = "1.3.0"
 description = "An auto-login script for Dr.com campus network authentication."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -8,6 +8,7 @@ authors = [
     { name = "AkibaraYumeka", email = "AkibaraYumeka@outlook.jp" }
 ]
 dependencies = [
+    "loguru>=0.7.3",
     "requests>=2.34.2",
     "tomlkit>=0.15.2",
 ]

@@ -1,28 +1,31 @@
 import socket
 
 import requests
+from loguru import logger
 
 # TODO: add random UA
 
-# check network status
-def check_wired(test_url="http://www.apple.com/library/test/success.html"):
+def check_wired(test_url: str="http://www.apple.com/library/test/success.html") -> bool:
+    """Check whather the Internet is accessible."""
+
     try:
         response = requests.head(test_url, timeout=3, allow_redirects=False)
         if response.status_code in [ 200, 204]:
-            # print("[DEBUG][check_wired] reponse.status_code ==", response.status_code)
+            logger.debug(f"reponse.status_code == {response.status_code}")
             return True
         elif 300 <= response.status_code < 400:
-            # print("[DEBUG][check_wired] reponse.status_code ==", response.status_code)
+            logger.debug(f"reponse.status_code == {response.status_code}")
             return False
         else:
-            # print("[DEBUG][check_wired] other exception status code ==", response.status_code)
+            logger.debug(f"Other exception status code == {response.status_code}")
             return False
     except requests.exceptions.RequestException as e:
-        # print("[DEBUG][check_wired] disconnected, timeout or error:", e)
+        logger.debug("Disconnected, timeout or error:", e)
         return False
 
-# grant terminal LAN IP
-def grant_lan_ip():
+def grant_lan_ip() -> str:
+    """Grant terminal LAN IP"""
+
     st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         st.connect(('10.255.255.255', 1))
@@ -33,8 +36,9 @@ def grant_lan_ip():
         st.close()
     return IP
 
-# log in to Dr.com
-def login(config):
+def login(config: dict) -> bool:
+    """Log in to Dr.com"""
+
     params = {
         "callback": "dr1003",
         "login_method": "1",
@@ -62,11 +66,11 @@ def login(config):
         response = requests.get(base_url, params=params, headers=headers, timeout=5)
         response.encoding = "utf-8"
 
-        print(f"[INFO] Authenticate server returned response: {response.text}")
+        logger.debug(f"Authenticate server returned response: {response.text}")
 
         if "\"result\":1" in response.text:
-            print("[INFO] Successfully connected to the Wired")
+            logger.info("Successfully connected to the Wired")
         else:
-            print("[WARN] Authentication failed, please check your config file")
+            logger.warning("Authentication failed, please check your config file")
     except requests.RequestException as e:
-        print(f"[ERROR] Get request failed: {e}")
+        logger.error(f"Get request failed: {e}")

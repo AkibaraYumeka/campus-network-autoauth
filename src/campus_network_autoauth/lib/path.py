@@ -2,6 +2,8 @@ import sys
 from pathlib import Path
 
 def get_runtime_dir() -> Path:
+    """Get current runtime dir."""
+
     # binary
     if getattr(sys, 'frozen', False):
         return Path(sys.executable).resolve().parent
@@ -16,4 +18,4 @@ def get_runtime_dir() -> Path:
 RUNTIME_DIR = get_runtime_dir()
 DATA_DIR = RUNTIME_DIR / "data"
 CONFIG_PATH = DATA_DIR / "config.toml"
-LOG_PATH = DATA_DIR / "latest.log"
+LOG_DIR = DATA_DIR / "logs"

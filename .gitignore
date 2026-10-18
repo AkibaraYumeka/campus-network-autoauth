@@ -1,11 +1,92 @@
-__pychace__
+# Personal Secrets
+data/config.toml
+.env
+.env.*
+*.local
+
+# Python Caches
+__pycache__/
 *.py[cod]
 *$py.class
 
+# Python Tools
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Virtual Environment
 .venv/
+venv/
+env/
+venv.bak/
+env.bak/
+
+# Build & Package Artifacts
 build/
 dist/
-lib /
-lib64/
-var/
-data/config.toml
+*.egg-info/
+*.egg
+*.tar.gz
+*.whl
+logs/
+*.log
+
+# OS & Editors
+.DS_Store
+._*
+desktop.ini
+Thumbs.db
+
+## Visual Studio
+.vs/
+*.user
+
+## Visual Studio Code
+.vscode/
+
+## JetBrains IDEs
+.idea/
+*.iml
+
+## Sublime Text
+*.sublime-workspace
+
+## Eclipse
+.project
+.classpath
+.settings/
+bin/
+target/
+
+## Xcode
+xcuserdata/
+*.xcuserstate
+
+## Vim
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+tags
+
+## Neovim
+.nvim/
+*.shada
+*.shada?
+
+## Emacs
+*~
+\#*\#
+.\#*
+*.elc
+.emacs.desktop
+.emacs.desktop.lock
+auto-save-list/
+.org-id-locations
