@@ -1,26 +1,37 @@
-# import argparse
-import json
-import os
+from pathlib import Path
+from tomlkit import document, comment, nl
+import tomlkit
 import requests
 import socket
 
-# TODO: replace json config file to toml(but only works on python 3.11+)
 # TODO: check config
 # TODO: auto daemon
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-config_path = os.path.join(script_dir, "config.json")
+config_path = Path(__file__).resolve().parent/"config.toml"
 
-# config
-def create_config():
-    # isp = ["@telecom", "@cmcc", "@"]
-    default_config = "{\n\t\"auth_url\": \"http://192.168.16.41:801/eportal/portal/login\",\n\t\"username\": \"\",\n\t\"password\": \"\",\n\t\"isp\": \"\"\n}"
+def create_config(path: Path) -> tomlkit.TOMLDocument:
+    doc = document()
+
+    doc.add("auth_url", "http://192.168.16.41:801/eportal/portal/login")
+    doc.add(nl())
+
+    doc.add(comment("学号和密码"))
+    doc.add("username", "")
+    doc.add("password", "")
+
+    doc.add(nl())
+    doc.add(comment("运营商（中国电信、中国移动、校园网）"))
+    doc.add(comment("可用选项：@telecom, @cmcc, xyw"))
+    doc.add("isp", "")
+
     with open(config_path, "w", encoding="utf-8") as f:
-        f.write(default_config)
+        f.write(tomlkit.dumps(doc))
 
-def load_config():
+    return doc
+
+def load_config(path: Path) -> tomlkit.TOMLDocument:
     with open(config_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+        return tomlkit.parse(f.read())
 
 # check network status
 def check_wired(test_url="http://www.apple.com/library/test/success.html"):
@@ -64,8 +75,7 @@ def login(config):
         "wlan_ac_name": "",
         "jsVersion": "4.1.3",
         "terminal_type": "1", # 1 = pc
-        "lang": "zh-cn",
-        "lang": "zh",
+        "lang": ["zh-cn","zh"],
         "v": "3020"
     }
 
@@ -85,7 +95,7 @@ def login(config):
         if "\"result\":1" in response.text:
             print("[INFO] Successfully connected to the Wired")
         else:
-            print("[WARN] Authentication failed, please check your config")
+            print("[WARN] Authentication failed, please check your config file")
     except requests.RequestException as e:
         print(f"[ERROR] Get request failed: {e}")
 
@@ -93,11 +103,11 @@ if __name__ == "__main__":
     if check_wired():
         print("[INFO] Wired, No need to re-login.")
     else:
-        print("[INFO] Disconnected from Wired or not authenticated, trying to login...")
-        if os.path.exists(config_path):
-            config = load_config()
+        print("[INFO] Disconnected from Wired or not authenticated, trying to log in...")
+        if config_path.exists():
+            config = load_config(config_path)
         else:
-            create_config()
-            print(f"[INFO] Generated config file at {config_path}, run the script again after wriring you account and password on it.")
+            create_config(config_path)
+            print(f"[INFO] Generated config file at {config_path}, run the script again after writing you username and password on it.")
             exit(0)
         login(config)

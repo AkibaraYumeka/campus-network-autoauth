@@ -13,7 +13,7 @@ Python 3.11 or above
 
 ## How to use
 
-Copy `src/config.json.example` to `src/config.json`.
+Copy `src/config.toml.example` to `src/config.json`(optional).
 
 Write your username, password and isp on it.
 

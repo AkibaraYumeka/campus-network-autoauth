@@ -7,4 +7,4 @@ dist/
 lib /
 lib64/
 var/
-src/config.json
+src/config.toml

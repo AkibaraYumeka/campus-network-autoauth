@@ -1,7 +1,0 @@
-{
-	"auth_url": "http://192.168.16.41:801/eportal/portal/login",
-	"username": "",
-	"password": "",
-	"isp": "",
-	"__comment_isp": [ "@cmcc", "@telecom" ]
-}
