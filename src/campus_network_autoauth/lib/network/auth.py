@@ -37,7 +37,7 @@ def grant_lan_ip() -> str:
     return IP
 
 def login(config: dict) -> bool:
-    """Log in to Dr.com"""
+    """Log in to Dr.COM"""
 
     params = {
         "callback": "dr1003",
@@ -50,15 +50,16 @@ def login(config: dict) -> bool:
         "wlan_ac_ip": "",
         "wlan_ac_name": "",
         "jsVersion": "4.1.3",
-        "terminal_type": "1", # 1 = pc
+        "terminal_type": "1",
         "lang": "zh-cn"
     }
 
-    base_url = config["auth_url"]
+    raw_url = "http://" + config["portal_ip"]
+    base_url = raw_url + ":" + config["portal_port"] + "/eportal/portal/login"
 
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
-        "Referer": "http://192.168.16.41/"
+        "Referer": raw_url
     }
 
     try:

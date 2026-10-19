@@ -1,9 +1,12 @@
-auth_url = "http://192.168.16.41:801/eportal/portal/login"
+# 认证门户的 IP 和端口号
+portal_ip = "192.168.16.41"
+portal_port = "801"
 
 # 学号和密码
 username = ""
 password = ""
 
-# 运营商（中国电信、中国移动、校园网）
-# 可用选项：@telecom, @cmcc, xyw
+# 互联网服务提供商（如中国电信、中国移动、校园网）
+# e.g. @telecom, @cmcc, @xyw
+# 需要根据实际可用 ISP 填写
 isp = ""

@@ -11,7 +11,9 @@ def create_config(config_path: Path) -> tomlkit.TOMLDocument:
 
     doc = document()
 
-    doc.add("auth_url", "http://192.168.16.41:801/eportal/portal/login")
+    doc.add(comment("认证门户的 IP 和端口号"))
+    doc.add("portal_ip", "192.168.16.41")
+    doc.add("portal_port", "801")
     doc.add(nl())
 
     doc.add(comment("学号和密码"))
@@ -19,8 +21,9 @@ def create_config(config_path: Path) -> tomlkit.TOMLDocument:
     doc.add("password", "")
 
     doc.add(nl())
-    doc.add(comment("运营商（中国电信、中国移动、校园网）"))
-    doc.add(comment("可用选项：@telecom, @cmcc, xyw"))
+    doc.add(comment("互联网服务提供商（如中国电信、中国移动、校园网）"))
+    doc.add(comment("e.g. @telecom, @cmcc, @xyw"))
+    doc.add(comment("需要根据实际可用 ISP 填写"))
     doc.add("isp", "")
 
     config_path.parent.mkdir(parents=True, exist_ok=True)

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-An auto-login script for `Dr.com` campus network authentication.
+An auto-login script for `Dr.COM` campus network authentication.
 
 > Tested on a campus network
 
