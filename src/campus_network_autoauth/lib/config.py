@@ -6,7 +6,7 @@ from loguru import logger
 
 # TODO: check config
 
-def create_config(config_path: Path) -> tomlkit.TOMLDocument:
+def _create_config(config_path: Path) -> None:
     """Create config file."""
 
     doc = document()
@@ -31,12 +31,19 @@ def create_config(config_path: Path) -> tomlkit.TOMLDocument:
     with config_path.open("w", encoding="utf-8") as f:
         f.write(tomlkit.dumps(doc))
 
-    logger.info(f"Generated config file at \"{config_path}\", Run the script again after filling in your username, password, and ISP")
+    logger.info(f"Generated config file at \"{config_path}\"")
 
-    return doc
-
-def load_config(config_path: Path) -> tomlkit.TOMLDocument:
+def _load_config(config_path: Path) -> tomlkit.TOMLDocument:
     """Load config file."""
     with config_path.open("r", encoding="utf-8") as f:
         logger.info(f"Loaded config file at \"{config_path}\"")
         return tomlkit.parse(f.read())
+
+def setup_config(config_path: Path) -> tomlkit.TOMLDocument | None:
+    """Setup the config system, detect config file automatically, generate and load it."""
+
+    if config_path.exists():
+        return _load_config(config_path)
+    else:
+        _create_config(config_path)
+        return None
