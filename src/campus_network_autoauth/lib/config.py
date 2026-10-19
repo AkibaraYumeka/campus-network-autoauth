@@ -31,12 +31,12 @@ def create_config(config_path: Path) -> tomlkit.TOMLDocument:
     with config_path.open("w", encoding="utf-8") as f:
         f.write(tomlkit.dumps(doc))
 
-    logger.info(f"Generated config file at \"{config_path}\". Run the script again after filling in your username, password, and ISP.")
+    logger.info(f"Generated config file at \"{config_path}\", Run the script again after filling in your username, password, and ISP")
 
     return doc
 
 def load_config(config_path: Path) -> tomlkit.TOMLDocument:
     """Load config file."""
     with config_path.open("r", encoding="utf-8") as f:
-        logger.info(f"Loaded config file at \"{config_path}\".")
+        logger.info(f"Loaded config file at \"{config_path}\"")
         return tomlkit.parse(f.read())

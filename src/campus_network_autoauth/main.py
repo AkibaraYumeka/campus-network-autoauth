@@ -13,9 +13,9 @@ def main() -> None:
     setup_logger(LOG_DIR)
 
     if check_wired():
-        logger.info("Wired, No need to re-login.")
+        logger.info("Wired, No need to re-login")
     else:
-        logger.info("Disconnected from Wired or not authenticated, trying to log in...")
+        logger.info("Disconnected from Wired or not authenticated, trying to log in")
         if CONFIG_PATH.exists():
             config = load_config(CONFIG_PATH)
         else:
