@@ -18,7 +18,7 @@ def _detect_device():
         "windows": "Windows",
         "darwin": "Mac OS X",
         "linux": "Linux",
-        "anrdoid": "Anrdoid",
+        "android": "Android",
         "ios": "iOS",
         "ipados": "iPadOS"
     }
