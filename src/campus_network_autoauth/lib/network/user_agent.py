@@ -7,11 +7,23 @@ from pathlib import Path
 from fake_useragent import UserAgent
 from loguru import logger
 
-def _detect_device_type() -> str:
-    """Return platforms that fake_useragent supports."""
+def _detect_device():
+    """Return device platforms and OS that fake_useragent supports."""
 
     device_type: str
     reason: str
+
+    system_os = platform.system().lower()
+    os_mapping = {
+        "windows": "Windows",
+        "darwin": "Mac OS X",
+        "linux": "Linux",
+        "anrdoid": "Anrdoid",
+        "ios": "iOS",
+        "ipados": "iPadOS"
+    }
+
+    device_os = os_mapping.get(system_os, "windows")
 
     # Android (include Termux)
     if hasattr(sys, "getandroidapilevel"):
@@ -29,15 +41,17 @@ def _detect_device_type() -> str:
             device_type, reason = "desktop", f"unknown system ({system}), fallback"
 
     logger.debug(f"[network.user_agent] Detected device type: \"{device_type}\" ({reason})")
+    logger.debug(f"[network.user_agent] Detected device OS: \"{device_os}\"")
 
-    return device_type
+    return device_type, device_os
 
 def _create_ua(ua_path: Path) -> dict:
     """Create User Agent profile."""
-
+    device_type, device_os = _detect_device()
     ua_pool = UserAgent(
         browsers=["Chrome"],
-        platforms=[_detect_device_type()],
+        platforms=[device_type],
+        os=device_os,
         min_version=130
     )
 
