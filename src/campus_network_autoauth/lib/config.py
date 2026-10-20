@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from enum import Enum, auto
 from pathlib import Path
 
 import tomlkit
@@ -26,6 +28,16 @@ class AccountConfig(BaseModel):
 class Config(BaseModel):
     portal: PortalConfig
     account: AccountConfig
+
+class ConfigStatus(Enum):
+    OK = auto()
+    CREATED = auto()
+    INVALID = auto()
+
+@dataclass (frozen=True)
+class SetupResult:
+    status: ConfigStatus
+    config: Config | None = None
 
 ERROR_MESSAGES = {
     ("portal", "ip"): "[portal.ip] Invalid or missing IP address. Please enter a valid IPv4 address (e.g., 192.168.16.41)",
@@ -65,7 +77,7 @@ def _create_config(config_path: Path) -> None:
 
     logger.info(f"[config] Generated config file at \"{config_path}\"")
 
-def _load_config(config_path: Path) -> Config | bool:
+def _load_config(config_path: Path) -> Config | None | bool:
     """Load config file."""
 
     if not config_path.exists():
@@ -76,13 +88,11 @@ def _load_config(config_path: Path) -> Config | bool:
         with config_path.open("r", encoding="utf-8") as f:
             config = tomlkit.load(f)
     except Exception as e:
-        logger.error(f"[confg] TOML syntax error in config file at \"{config_path}\": error={e}")
+        logger.error(f"[config] TOML syntax error in config file at \"{config_path}\": error={e}")
         return False
 
     try:
         config_obj = Config(**config.unwrap())
-        logger.info(f"[config] Loaded config file from \"{config_path}\"")
-        return config_obj
     except ValidationError as e:
         logger.error(f"[config] Failed to parse config file at \"{config_path}\":")
         for error in e.errors():
@@ -91,13 +101,16 @@ def _load_config(config_path: Path) -> Config | bool:
             logger.error(f"[config] {msg}")
         return False
 
-def setup_config(config_path: Path) -> Config | bool:
+    logger.info(f"[config] Loaded config file from \"{config_path}\"")
+    return config_obj
+
+def setup_config(config_path: Path) -> SetupResult:
     """Setup the config system, detect config file automatically, generate and load it."""
 
     config = _load_config(config_path)
     if config is None:
         _create_config(config_path)
-        return None
+        return SetupResult(ConfigStatus.CREATED)
     if config is False:
-        return False
-    return config
+        return SetupResult(ConfigStatus.INVALID)
+    return SetupResult(ConfigStatus.OK, config)
