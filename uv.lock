@@ -13,7 +13,7 @@ wheels = [
 
 [[package]]
 name = "campus-network-autoauth"
-version = "1.4.3"
+version = "1.4.4"
 source = { editable = "." }
 dependencies = [
     { name = "fake-useragent" },

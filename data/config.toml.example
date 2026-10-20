@@ -4,11 +4,10 @@ ip = "192.168.16.41"
 port = 801
 
 [account]
-# 学号和密码
-username = ""
-password = ""
+# 请替换为你的学号和密码
+username = "20260101"
+password = "Password@123"
 
-# 互联网服务提供商（如中国电信、中国移动、校园网）
-# e.g. @telecom, @cmcc, @xyw
-# 需要根据实际可用 ISP 填写
-isp = ""
+# 互联网服务提供商后缀（根据实际学校宽带要求填写）
+# 如中国电信(@telecom)、中国移动(@cmcc)、校园网(@xyw)
+isp = "@telecom"

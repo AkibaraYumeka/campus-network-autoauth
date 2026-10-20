@@ -23,7 +23,7 @@ def _detect_device_type() -> str:
         system = platform.system()
         if system in ("iOS", "iPadOS"):
             device_type, reason = "mobile", f"{system}"
-        if system in ("Windows", "Darwin", "Linux"):
+        elif system in ("Windows", "Darwin", "Linux"):
             device_type, reason = "desktop", f"{system}"
         else:
             device_type, reason = "desktop", f"unknown system ({system}), fallback"
