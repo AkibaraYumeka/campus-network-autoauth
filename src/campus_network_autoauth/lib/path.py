@@ -19,3 +19,4 @@ RUNTIME_DIR = get_runtime_dir()
 DATA_DIR = RUNTIME_DIR / "data"
 CONFIG_PATH = DATA_DIR / "config.toml"
 LOG_DIR = DATA_DIR / "logs"
+UA_PATH = DATA_DIR / "ua_profile.json"

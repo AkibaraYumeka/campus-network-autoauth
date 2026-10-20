@@ -36,8 +36,9 @@ def _create_config(config_path: Path) -> None:
 def _load_config(config_path: Path) -> tomlkit.TOMLDocument:
     """Load config file."""
     with config_path.open("r", encoding="utf-8") as f:
-        logger.info(f"Loaded config file at \"{config_path}\"")
+        logger.info(f"Loaded config file from \"{config_path}\"")
         return tomlkit.parse(f.read())
+# TODO: add detection for config file
 
 def setup_config(config_path: Path) -> tomlkit.TOMLDocument | None:
     """Setup the config system, detect config file automatically, generate and load it."""

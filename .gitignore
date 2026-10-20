@@ -1,5 +1,6 @@
 # Personal Secrets
-data/config.toml
+/data/**
+!/data/config.toml.example
 .env
 .env.*
 *.local

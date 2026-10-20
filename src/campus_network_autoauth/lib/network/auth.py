@@ -3,24 +3,22 @@ import socket
 import requests
 from loguru import logger
 
-# TODO: add random UA
-
 def check_wired(test_url: str="http://connect.rom.miui.com/generate_204") -> bool:
-    """Check whether the Internet is accessible."""
+    """Check whether the Wired is accessible."""
 
     try:
         response = requests.head(test_url, timeout=3, allow_redirects=False, stream=True)
         if response.status_code == 204:
-            logger.debug(f"Network check success. Status: {response.status_code}")
+            logger.debug(f"[network.auth] Verified Wired session: status_code={response.status_code}")
             return True
         elif 300 <= response.status_code < 400 or response.status_code == 200:
-            logger.debug(f"Network intercepted by gateway. Status: {response.status_code}")
+            logger.debug(f"[network.auth] Detected captive portal interception: status_code={response.status_code}")
             return False
         else:
-            logger.debug(f"Unexpeted status code from {test_url}: {response.status_code}")
+            logger.debug(f"[network.auth] Received unexpected response: test_url={test_url}, status_code={response.status_code}")
             return False
     except requests.exceptions.RequestException as e:
-        logger.debug("Disconnected or timeout:", e)
+        logger.debug(f"[network.auth] Failed to reach Wired: error={e}")
         return False
 
 def grant_lan_ip() -> str:
@@ -36,7 +34,7 @@ def grant_lan_ip() -> str:
         st.close()
     return IP
 
-def login(config: dict) -> bool:
+def login(config: dict, ua: str) -> bool:
     """Log in to Dr.COM"""
 
     params = {
@@ -58,7 +56,7 @@ def login(config: dict) -> bool:
     base_url = raw_url + ":" + config["portal_port"] + "/eportal/portal/login"
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+        "User-Agent": ua,
         "Referer": raw_url
     }
 
@@ -66,11 +64,14 @@ def login(config: dict) -> bool:
         response = requests.get(base_url, params=params, headers=headers, timeout=5)
         response.encoding = "utf-8"
 
-        logger.debug(f"Authenticate server returned response: {response.text}")
+        # logger.debug(f"[network.auth] Received authentication response: body={response.text}")
 
         if "\"result\":1" in response.text:
-            logger.info("Successfully connected to the Wired")
+            logger.info("[network.auth] Logged in to the portal, successfully connected to the Wired")
+            return True
         else:
-            logger.warning("Authentication failed, please check your config file")
+            logger.warning(f"[network.auth] Authentication failed: result={response.text[:80]}")
+            return False
     except requests.RequestException as e:
-        logger.error(f"Get request failed: {e}")
+        logger.error(f"[network.auth] Login request failed: error={e}")
+        return False

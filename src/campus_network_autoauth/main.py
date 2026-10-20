@@ -4,23 +4,24 @@ from loguru import logger
 
 from campus_network_autoauth.lib.config import setup_config
 from campus_network_autoauth.lib.logger import setup_logger
-from campus_network_autoauth.lib.network import check_wired, login
-from campus_network_autoauth.lib.path import CONFIG_PATH, LOG_DIR
+from campus_network_autoauth.lib.network import check_wired, login, get_pinned_ua
+from campus_network_autoauth.lib.path import CONFIG_PATH, LOG_DIR, UA_PATH
 
 # TODO: auto daemon
 
 def main() -> None:
-    setup_logger(LOG_DIR)
+    setup_logger(LOG_DIR, debug=False)
 
     if check_wired():
-        logger.info("Wired, No need to re-login")
+        logger.info("[main] Wired session verified, re-login not required")
     else:
-        logger.info("Disconnected from Wired or not authenticated, trying to log in")
+        logger.info("[main] Disconnected from Wired or not authenticated, trying to log in")
         config = setup_config(CONFIG_PATH)
-        if config == None:
-            logger.warning("Config file not found Please fill in your username, password, and ISP, then try again.")
-            sys.exit(0)
-        login(config)
+        if config is None:
+            logger.warning("[main] Failed to load config file: username, password, and ISP are all required")
+            sys.exit(1)
+        if not login(config, get_pinned_ua(UA_PATH)):
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()
