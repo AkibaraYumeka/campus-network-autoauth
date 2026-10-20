@@ -18,6 +18,8 @@ def main() -> None:
         logger.info("[main] Disconnected from Wired or not authenticated, trying to log in")
         config = setup_config(CONFIG_PATH)
         if config is None:
+            sys.exit(0)
+        if config is False:
             sys.exit(1)
         if not login(config, get_pinned_ua(UA_PATH)):
             sys.exit(1)

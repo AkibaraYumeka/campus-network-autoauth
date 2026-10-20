@@ -1,7 +1,9 @@
+[portal]
 # 认证门户的 IP 和端口号
-portal_ip = "192.168.16.41"
-portal_port = "801"
+ip = "192.168.16.41"
+port = 801
 
+[account]
 # 学号和密码
 username = ""
 password = ""

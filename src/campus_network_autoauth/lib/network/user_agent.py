@@ -61,7 +61,7 @@ def _load_ua(ua_path: Path) -> dict | None:
         with ua_path.open("r", encoding="utf-8") as f:
             profile = json.load(f)
     except (OSError, json.JSONDecodeError) as e:
-        logger.warning(f"[network.user_agent] Failed to parse User-Agent profile at \"{ua_path}\": {e}")
+        logger.error(f"[network.user_agent] Failed to parse User-Agent profile at \"{ua_path}\": error={e}")
         return None
 
     ua_str = profile.get("user-agent") if isinstance(profile, dict) else None

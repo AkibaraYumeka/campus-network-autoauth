@@ -3,6 +3,8 @@ import socket
 import requests
 from loguru import logger
 
+from campus_network_autoauth.lib.config import Config
+
 def check_wired(test_url: str="http://connect.rom.miui.com/generate_204") -> bool:
     """Check whether the Wired is accessible."""
 
@@ -34,14 +36,14 @@ def grant_lan_ip() -> str:
         st.close()
     return IP
 
-def login(config: dict, ua: str) -> bool:
+def login(config: Config, ua: str) -> bool:
     """Log in to Dr.COM"""
 
     params = {
         "callback": "dr1003",
         "login_method": "1",
-        "user_account": ",0," + config["username"] + config["isp"],
-        "user_password": config["password"],
+        "user_account": ",0," + config.account.username + config.account.isp,
+        "user_password": config.account.password,
         "wlan_user_ip": grant_lan_ip(),
         "wlan_user_ipv6": "",
         "wlan_user_mac": "",
@@ -52,8 +54,8 @@ def login(config: dict, ua: str) -> bool:
         "lang": "zh-cn"
     }
 
-    raw_url = "http://" + config["portal_ip"]
-    base_url = raw_url + ":" + config["portal_port"] + "/eportal/portal/login"
+    raw_url = "http://" + config.portal.ip
+    base_url = raw_url + ":" + str(config.portal.port) + "/eportal/portal/login"
 
     headers = {
         "User-Agent": ua,
