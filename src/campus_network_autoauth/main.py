@@ -18,7 +18,6 @@ def main() -> None:
         logger.info("[main] Disconnected from Wired or not authenticated, trying to log in")
         config = setup_config(CONFIG_PATH)
         if config is None:
-            logger.warning("[main] Failed to load config file: username, password, and ISP are all required")
             sys.exit(1)
         if not login(config, get_pinned_ua(UA_PATH)):
             sys.exit(1)

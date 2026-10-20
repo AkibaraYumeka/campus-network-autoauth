@@ -81,4 +81,4 @@ def setup_logger(log_dir: Path, debug: bool = False) -> None:
 
     atexit.register(_archive_latest_log, log_dir)
 
-    logger.info("Logger initialized")
+    logger.info("[logger] Logger initialized")

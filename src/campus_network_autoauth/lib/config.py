@@ -31,12 +31,12 @@ def _create_config(config_path: Path) -> None:
     with config_path.open("w", encoding="utf-8") as f:
         f.write(tomlkit.dumps(doc))
 
-    logger.info(f"Generated config file at \"{config_path}\"")
+    logger.info(f"[config] Generated config file at \"{config_path}\"")
 
 def _load_config(config_path: Path) -> tomlkit.TOMLDocument:
     """Load config file."""
     with config_path.open("r", encoding="utf-8") as f:
-        logger.info(f"Loaded config file from \"{config_path}\"")
+        logger.info(f"[config] Loaded config file from \"{config_path}\"")
         return tomlkit.parse(f.read())
 # TODO: add detection for config file
 
@@ -47,4 +47,5 @@ def setup_config(config_path: Path) -> tomlkit.TOMLDocument | None:
         return _load_config(config_path)
     else:
         _create_config(config_path)
+        logger.warning("[config] Failed to load config file: username, password, and ISP are all required")
         return None
