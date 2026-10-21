@@ -1,5 +1,4 @@
 import sys
-from typing import assert_never
 
 from loguru import logger
 
@@ -11,6 +10,7 @@ from campus_network_autoauth.lib.path import CONFIG_PATH, LOG_DIR, UA_PATH
 # TODO: auto daemon
 
 def main() -> None:
+    # TODO: add args like `--config={path} | -c`, `--debug | --no-debug`, `--help`, `--version | -V`...
     setup_logger(LOG_DIR, debug=False)
 
     if check_wired():
@@ -29,9 +29,6 @@ def main() -> None:
         case Invalid():
             logger.error("[main] Config is invalid, please fix it and run again")
             sys.exit(1)
-        case _ as unreachable:
-            logger.critical(f"[main] Unhandled config state, aborting")
-            assert_never(unreachable)
 
 if __name__ == "__main__":
     main()

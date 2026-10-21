@@ -7,55 +7,49 @@ from pathlib import Path
 from fake_useragent import UserAgent
 from loguru import logger
 
-def _detect_device():
+DEFAULT_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/135.0.0.0 Safari/537.36"
+)
+
+def _detect_device() -> tuple[str, str]:
     """Return device platforms and OS that fake_useragent supports."""
 
-    device_type: str
-    reason: str
+    if hasattr(sys, "getandroidapilevel") or "ANDROID_ROOT" in os.environ:
+        return "mobile", "Android"
 
-    system_os = platform.system().lower()
-    os_mapping = {
-        "windows": "Windows",
-        "darwin": "Mac OS X",
-        "linux": "Linux",
-        "android": "Android",
-        "ios": "iOS",
-        "ipados": "iPadOS"
-    }
+    system = platform.system()
 
-    device_os = os_mapping.get(system_os, "windows")
+    if system == "Windows":
+        return "desktop", "Windows"
+    if system == "Darwin":
+        return ("mobile", "iOS") if sys.platform == "ios" else ("desktop", "Mac OS X")
+    if system == "Linux":
+        return "desktop", "Linux"
 
-    # Android (include Termux)
-    if hasattr(sys, "getandroidapilevel"):
-        device_type, reason = "mobile", "Android (sys.getandroidapilevel)"
-    elif any("ANDROID" in k.upper() for k in os.environ):
-        device_type, reason = "mobile", "Android (environment variable)"
-
-    else:
-        system = platform.system()
-        if system in ("iOS", "iPadOS"):
-            device_type, reason = "mobile", f"{system}"
-        elif system in ("Windows", "Darwin", "Linux"):
-            device_type, reason = "desktop", f"{system}"
-        else:
-            device_type, reason = "desktop", f"unknown system ({system}), fallback"
-
-    logger.debug(f"[network.user_agent] Detected device type: \"{device_type}\" ({reason})")
-    logger.debug(f"[network.user_agent] Detected device OS: \"{device_os}\"")
-
-    return device_type, device_os
+    logger.warning(f"[network.user_agent] Unknown platform: \"{system}\", falling back to Windows Desktop")
+    return "desktop", "Windows"
 
 def _create_ua(ua_path: Path) -> dict:
     """Create User Agent profile."""
-    device_type, device_os = _detect_device()
-    ua_pool = UserAgent(
-        browsers=["Chrome"],
-        platforms=[device_type],
-        os=device_os,
-        min_version=130
-    )
 
-    profile = {"user-agent": ua_pool.chrome}
+    try:
+        device_type, device_os = _detect_device()
+        ua_pool = UserAgent(
+            browsers=["Chrome"],
+            platforms=[device_type],
+            os=[device_os],
+            min_version=130
+        )
+
+        ua_str = ua_pool.chrome
+        if not isinstance(ua_str, str) or not ua_str:
+            raise ValueError("fake_useragent returned an empty User-Agent")
+        profile = {"user-agent": ua_str}
+    except Exception as e:
+        logger.warning(f"[network.user_agent] Failed to generate User-Agent, falling back to default: error={e}")
+        profile = {"user-agent": DEFAULT_UA}
 
     ua_path.parent.mkdir(parents=True, exist_ok=True)
     with ua_path.open("w", encoding="utf-8") as f:
@@ -89,7 +83,6 @@ def _load_ua(ua_path: Path) -> dict | None:
 
 def get_pinned_ua(ua_path: Path) -> str:
     """Get pinned User-Agent from profile or generate one."""
-
 
     profile = _load_ua(ua_path)
     if profile is None:

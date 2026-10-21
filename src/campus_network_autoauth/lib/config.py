@@ -1,20 +1,17 @@
 from dataclasses import dataclass
+from ipaddress import IPv4Address
 from pathlib import Path
+from typing import Annotated
 
 import tomlkit
 from loguru import logger
-from pydantic import BaseModel, ValidationError, Field
+from pydantic import BaseModel, BeforeValidator, ValidationError, Field
 from tomlkit import document, table, comment, nl
 
-IPV4_PATTERN = (
-    r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}"
-    r"(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
-)
+IPv4Str = Annotated[IPv4Address, BeforeValidator(lambda v: v.strip() if isinstance(v, str) else v)]
 
 class PortalConfig(BaseModel):
-    ip: str = Field(
-        min_length=1, str_strip_whitespace=True, pattern=IPV4_PATTERN
-    )
+    ip: IPv4Str
     port: int = Field(ge=1, le=65535)
 
 class AccountConfig(BaseModel):
