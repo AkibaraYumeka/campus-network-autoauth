@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+
 def get_runtime_dir() -> Path:
     """Get current runtime dir."""
 
