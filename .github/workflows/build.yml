@@ -37,7 +37,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install uv
-          uv sync
+          uv sync --group dev --no-editable
 
       - name: Activate .venv for subsequent steps
         shell: bash
@@ -54,20 +54,22 @@ jobs:
           python -c "import sys; print(sys.prefix)"
 
       - name: Build with Nuitka
-        uses: Nuitka/Nuitka-Action@main
-        with:
-          nuitka-version: main
-          script-name: src/campus_network_autoauth/main.py
-          mode: onefile
-          output-dir: dist
-          output-file: campus-network-autoauth
-          assume-yes-for-downloads: true
-          nofollow-import-to: |
-            *.tests
-            *.distutils
-            unittest
-            pytest
-            setuptools
+        shell: bash
+        run: |
+          uv run --no-sync python -m nuitka --version
+          uv run --no-sync python -m nuitka \
+            --include-distribution-metadata=campus-network-autoauth \
+            --onefile \
+            --output-dir=dist \
+            --output-filename=campus-network-autoauth \
+            --assume-yes-for-downloads \
+            --python-flag=-m \
+            --nofollow-import-to="*.tests" \
+            --nofollow-import-to="*.distutils" \
+            --nofollow-import-to=unittest \
+            --nofollow-import-to=pytest \
+            --nofollow-import-to=setuptools \
+            src/campus_network_autoauth
 
       - name: Rename artifacts by platforms
         shell: bash
