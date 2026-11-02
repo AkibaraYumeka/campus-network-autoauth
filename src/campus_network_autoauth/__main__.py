@@ -1,5 +1,7 @@
+import argparse
 import sys
 import time
+from pathlib import Path
 
 from loguru import logger
 
@@ -14,18 +16,44 @@ from campus_network_autoauth.lib.network import (
 )
 from campus_network_autoauth.lib.path import CONFIG_PATH, LOG_DIR, UA_PATH
 
+from .__version__ import __description__, __version__
+
 # TODO: auto daemon
 
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=__description__,
+        add_help=False
+    )
+    parser.add_argument("-c", "--config", type=Path, help="Path to the config file")
+    parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode")
+    parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show the version number and exit"
+    )
+    return parser.parse_args()
+
 def main() -> None:
-    # TODO: add args like `--config={path} | -c`, `--debug | --no-debug`, `--help`, `--version | -V`...
-    setup_logger(LOG_DIR, debug=True)
+    args = _parse_args()
+    setup_logger(LOG_DIR, debug=args.debug)
 
     if check_wired():
         logger.info("[main] Wired session verified, re-login not required")
         sys.exit(0)
 
     logger.info("[main] Disconnected from Wired or not authenticated, trying to log in")
-    result = setup_config(CONFIG_PATH)
+
+    target_config_path = args.config or CONFIG_PATH
+
+    if args.config:
+        logger.debug(f"[main] Using custom config path: {target_config_path}")
+
+    result = setup_config(target_config_path)
+
     match result:
         case Ok(config=config):
             pass

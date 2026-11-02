@@ -1,6 +1,6 @@
 [project]
 name = "campus-network-autoauth"
-version = "1.6.0"
+version = "1.7.0"
 description = "An auto-login script for Dr.COM campus network authentication."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -25,5 +25,5 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "nuitka>=4.3.1",
+    "nuitka>=4.3.3",
 ]
