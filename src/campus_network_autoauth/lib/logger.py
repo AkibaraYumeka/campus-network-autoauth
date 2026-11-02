@@ -7,6 +7,7 @@ from pathlib import Path
 
 from loguru import logger
 
+
 def _get_next_archive_name(log_dir: Path) -> str:
     """Get the base name for the next daily archive file (e.g. 19700101-1)."""
 
@@ -73,7 +74,7 @@ def setup_logger(log_dir: Path, debug: bool = False) -> None:
     logger.add(
         str(latest_log),
         format=file_format,
-        level="INFO",
+        level="DEBUG" if debug else "INFO",
         encoding="utf-8",
         enqueue=True,
         mode="w", 

@@ -5,8 +5,8 @@ from typing import Annotated
 
 import tomlkit
 from loguru import logger
-from pydantic import BaseModel, BeforeValidator, ValidationError, Field
-from tomlkit import document, table, comment, nl
+from pydantic import BaseModel, BeforeValidator, Field, ValidationError
+from tomlkit import comment, document, nl, table
 
 IPv4Str = Annotated[IPv4Address, BeforeValidator(lambda v: v.strip() if isinstance(v, str) else v)]
 
@@ -21,9 +21,13 @@ class AccountConfig(BaseModel):
         min_length=1, str_strip_whitespace=True, pattern=r"^@[a-zA-Z0-9]+$"
     )
 
+class EtcConfig(BaseModel):
+    max_login_attempts: int = Field(default=3, gt=0)
+
 class Config(BaseModel):
     portal: PortalConfig
     account: AccountConfig
+    etc: EtcConfig
 
 @dataclass(frozen=True, slots=True)
 class Created: pass
@@ -43,6 +47,7 @@ ERROR_MESSAGES = {
     ("account", "username"): "[account.username] Username cannot be empty. Please fill it in the config file",
     ("account", "password"): "[account.password] Password cannot be empty. Please fill it in the config file",
     ("account", "isp"): "[account.isp] Invalid or missing ISP format. It must start with '@' followed by alphanumeric characters (e.g., @telecom, @cmcc, @xyw)",
+    ("etc", "max_login_attempts"): "[etc.max_login_attempts] Invalid or missing max login attempts. It must be a positive integer"
 }
 
 def _create_config(config_path: Path) -> None:
@@ -67,6 +72,14 @@ def _create_config(config_path: Path) -> None:
     account.add(comment("如中国电信(@telecom)、中国移动(@cmcc)、校园网(@xyw)"))
     account.add("isp", "@telecom")
     doc.add("account", account)
+    doc.add(nl())
+
+    etc = table()
+    etc.add(comment("其他设置"))
+    etc.add(comment("最大登录尝试次数"))
+    etc.add("max_login_attempts", 3)
+    doc.add("etc", etc)
+    # TODO: add more settings like `retry_delay`, `timeout`, `debug`, `log_level`, etc.
 
     config_path.parent.mkdir(parents=True, exist_ok=True)
     with config_path.open("w", encoding="utf-8") as f:

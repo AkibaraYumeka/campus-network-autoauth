@@ -11,3 +11,8 @@ password = "Password@123"
 # 互联网服务提供商后缀（根据实际学校宽带要求填写）
 # 如中国电信(@telecom)、中国移动(@cmcc)、校园网(@xyw)
 isp = "@telecom"
+
+[etc]
+# 其他设置
+# 最大登录尝试次数
+max_login_attempts = 3

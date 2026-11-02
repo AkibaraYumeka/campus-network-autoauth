@@ -1,10 +1,50 @@
 import json
 import socket
+import time
 
 import requests
 from loguru import logger
 
 from campus_network_autoauth.lib.config import Config
+
+
+def _has_lan_ip() -> bool:
+    """Check whether the terminal has a LAN IP."""
+
+    ip = _grant_lan_ip()
+    return not ip.startswith(("127.", "169.254."))
+
+def wait_for_lan_ip(timeout: float=120) -> bool:
+    """Wait for a valid LAN IP address."""
+
+    logger.debug(f"[network.auth] Waiting for a LAN IP, timeout={timeout}s")
+    deadline = time.monotonic() + timeout
+    retry_interval = 1
+    while time.monotonic() < deadline:
+        if _has_lan_ip():
+            logger.info("[network.auth] LAN IP is ready")
+            return True
+        logger.debug(f"[network.auth] LAN IP or route not ready, retrying in {retry_interval}s")
+        time.sleep(retry_interval)
+    logger.error(f"[network.auth] Timeout waiting for LAN IP after {timeout}s")
+    return False
+
+def wait_for_portal(portal_ip: str, portal_port: int, timeout: float = 120) -> bool:
+    """Wait for the portal to be reachable on the specified IP and port."""
+
+    logger.debug(f"[network.auth] Waiting for portal {portal_ip}:{portal_port}, timeout={timeout}s")
+    deadline = time.monotonic() + timeout
+    retry_interval = 1
+    while time.monotonic() < deadline:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(2)
+            if s.connect_ex((portal_ip, portal_port)) == 0:
+                logger.info(f"[network.auth] Portal {portal_ip}:{portal_port} is reachable")
+                return True
+        logger.debug(f"[network.auth] Portal {portal_ip}:{portal_port} not reachable, retrying in {retry_interval}s")
+        time.sleep(retry_interval)
+    logger.error(f"[network.auth] Portal {portal_ip}:{portal_port} unreachable after {timeout}s")
+    return False
 
 def check_wired(test_url: str="http://connect.rom.miui.com/generate_204") -> bool:
     """Check whether the Wired is accessible."""
@@ -33,7 +73,7 @@ def _grant_lan_ip() -> str:
         ip = st.getsockname()[0]
     except Exception as e:
         ip = "127.0.0.1"
-        logger.warning(f"[network.auth] Failed to grant LAN IP: error={e}")
+        logger.debug(f"[network.auth] LAN IP route probe failed: error={e}")
     finally:
         st.close()
     return ip
