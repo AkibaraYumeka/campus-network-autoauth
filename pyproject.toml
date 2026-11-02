@@ -1,6 +1,6 @@
 [project]
 name = "campus-network-autoauth"
-version = "1.5.0"
+version = "1.6.0"
 description = "An auto-login script for Dr.COM campus network authentication."
 readme = "README.md"
 requires-python = ">=3.13"

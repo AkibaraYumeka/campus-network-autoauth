@@ -20,10 +20,6 @@ def main() -> None:
     # TODO: add args like `--config={path} | -c`, `--debug | --no-debug`, `--help`, `--version | -V`...
     setup_logger(LOG_DIR, debug=True)
 
-    if not wait_for_lan_ip(timeout=120):
-        logger.error("[main] Could not determine a LAN IP or route, please check your network connection")
-        sys.exit(1)
-
     if check_wired():
         logger.info("[main] Wired session verified, re-login not required")
         sys.exit(0)
@@ -39,6 +35,10 @@ def main() -> None:
         case Invalid():
             logger.error("[main] Config is invalid, please fix it and run again")
             sys.exit(1)
+
+    if not wait_for_lan_ip(str(config.portal.ip), timeout=120):
+        logger.error("[main] Could not determine a route to the portal, please check your network connection")
+        sys.exit(1)
 
     if not wait_for_portal(str(config.portal.ip), config.portal.port, timeout=120):
         logger.error("[main] Portal unreachable, please check your network connection")

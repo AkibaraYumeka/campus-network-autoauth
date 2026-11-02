@@ -8,25 +8,34 @@ from loguru import logger
 from campus_network_autoauth.lib.config import Config
 
 
-def _has_lan_ip() -> bool:
-    """Check whether the terminal has a LAN IP."""
+def _get_local_ip(destination_ip: str) -> str | None:
+    """Get the local IP selected for reaching a destination."""
 
-    ip = _grant_lan_ip()
-    return not ip.startswith(("127.", "169.254."))
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        try:
+            sock.connect((destination_ip, 1))
+            ip = sock.getsockname()[0]
+        except OSError as e:
+            logger.debug(f"[network.auth] Route probe to {destination_ip} failed: error={e}")
+            return None
 
-def wait_for_lan_ip(timeout: float=120) -> bool:
-    """Wait for a valid LAN IP address."""
+    if ip.startswith(("127.", "169.254.")):
+        return None
+    return ip
 
-    logger.debug(f"[network.auth] Waiting for a LAN IP, timeout={timeout}s")
+def wait_for_lan_ip(portal_ip: str, timeout: float = 120) -> bool:
+    """Wait until a LAN source IP can be selected for reaching the portal."""
+
+    logger.debug(f"[network.auth] Waiting for a route to portal {portal_ip}, timeout={timeout}s")
     deadline = time.monotonic() + timeout
     retry_interval = 1
     while time.monotonic() < deadline:
-        if _has_lan_ip():
-            logger.info("[network.auth] LAN IP is ready")
+        if _get_local_ip(portal_ip) is not None:
+            logger.info(f"[network.auth] Route to portal {portal_ip} is ready")
             return True
-        logger.debug(f"[network.auth] LAN IP or route not ready, retrying in {retry_interval}s")
+        logger.debug(f"[network.auth] Route to portal {portal_ip} not ready, retrying in {retry_interval}s")
         time.sleep(retry_interval)
-    logger.error(f"[network.auth] Timeout waiting for LAN IP after {timeout}s")
+    logger.error(f"[network.auth] Timeout waiting for a route to portal {portal_ip} after {timeout}s")
     return False
 
 def wait_for_portal(portal_ip: str, portal_port: int, timeout: float = 120) -> bool:
@@ -64,20 +73,6 @@ def check_wired(test_url: str="http://connect.rom.miui.com/generate_204") -> boo
         logger.debug(f"[network.auth] Failed to reach Wired: error={e}")
         return False
 
-def _grant_lan_ip() -> str:
-    """Grant terminal LAN IP"""
-
-    st = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        st.connect(("10.255.255.255", 1))
-        ip = st.getsockname()[0]
-    except Exception as e:
-        ip = "127.0.0.1"
-        logger.debug(f"[network.auth] LAN IP route probe failed: error={e}")
-    finally:
-        st.close()
-    return ip
-
 # TODO: add auto grant MAC address function
 
 
@@ -99,12 +94,17 @@ def _parse_response(body: str) -> dict | None:
 def login(config: Config, ua: str) -> bool:
     """Log in to Dr.COM"""
 
+    local_ip = _get_local_ip(str(config.portal.ip))
+    if local_ip is None:
+        logger.error(f"[network.auth] Could not determine a local IP for portal {config.portal.ip}")
+        return False
+
     params = {
         "callback": "dr1003",
         "login_method": "1",
         "user_account": f",0,{config.account.username}{config.account.isp}",
         "user_password": config.account.password,
-        "wlan_user_ip": _grant_lan_ip(),
+        "wlan_user_ip": local_ip,
         "wlan_user_ipv6": "",
         "wlan_user_mac": "",
         "wlan_ac_ip": "",
