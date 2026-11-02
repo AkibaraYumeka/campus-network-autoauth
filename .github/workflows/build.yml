@@ -10,16 +10,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             arch: x86_64
             python-version: "3.13"
-          - os: windows-latest
+          - os: windows-2022
             arch: x86_64
             python-version: "3.13"
-          - os: macos-latest
+          - os: macos-15
             arch: arm64
             python-version: "3.13"
-          - os: macos-26-intel
+          - os: macos-15-intel
             arch: x86_64
             python-version: "3.13"
 
@@ -73,13 +73,13 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist_artifacts
-          ls -F dist/
+          ls -RF dist/
           ARCH="${{ matrix.arch }}"
           OS="${{ matrix.os }}"
 
-          if [ "$OS" == "windows-latest" ]; then
+          if [ "$OS" == "windows-2022" ]; then
             mv dist/campus-network-autoauth dist_artifacts/campus-network-autoauth_windows-$ARCH.exe
-          elif [ "$OS" == "ubuntu-latest" ]; then
+          elif [ "$OS" == "ubuntu-24.04" ]; then
             mv dist/campus-network-autoauth dist_artifacts/campus-network-autoauth_linux-$ARCH.bin
           elif [ "${{ runner.os }}" == "macOS" ]; then
             mv dist/campus-network-autoauth dist_artifacts/campus-network-autoauth_darwin-$ARCH.bin
