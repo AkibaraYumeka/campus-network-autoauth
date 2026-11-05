@@ -13,9 +13,9 @@ def _get_next_archive_name(log_dir: Path) -> str:
 
     today = datetime.now().strftime("%Y%m%d")
     log_dir.mkdir(parents=True, exist_ok=True)
-    
+
     existing_archives = list(log_dir.glob(f"{today}-*.log.gz"))
-    
+
     max_idx = 0
     for f in existing_archives:
         try:
@@ -23,8 +23,9 @@ def _get_next_archive_name(log_dir: Path) -> str:
             max_idx = max(max_idx, idx)
         except (ValueError, IndexError):
             continue
-            
+
     return f"{today}-{max_idx + 1}"
+
 
 def _archive_latest_log(log_dir: Path):
     """Archive latest.log to a dated .gz file upon process exit."""
@@ -32,25 +33,26 @@ def _archive_latest_log(log_dir: Path):
     latest_log = log_dir / "latest.log"
     if not latest_log.exists():
         return
-    
+
     logger.complete()
-    
+
     archive_base = _get_next_archive_name(log_dir)
     archive_path = log_dir / f"{archive_base}.log.gz"
-    
+
     try:
-        with gzip.open(archive_path, "wb") as f_out:
-            with open(latest_log, "rb") as f_in:
-                shutil.copyfileobj(f_in, f_out)
+        with gzip.open(archive_path, "wb") as f_out, open(latest_log, "rb") as f_in:
+            shutil.copyfileobj(f_in, f_out)
     except Exception as e:
         print(f"[ERROR] Failed to archive log: {e}", file=sys.stderr)
 
+
 def setup_logger(log_dir: Path, debug: bool = False) -> None:
     """Configure the logging system, handling latest.log and archiving automatically.
-    
+
     :param log_dir: Directory to save the logs.
     :param debug: Whether to enable DEBUG level logs.
     """
+
     logger.remove()
 
     log_dir = Path(log_dir)
@@ -77,7 +79,7 @@ def setup_logger(log_dir: Path, debug: bool = False) -> None:
         level="DEBUG" if debug else "INFO",
         encoding="utf-8",
         enqueue=True,
-        mode="w", 
+        mode="w",
     )
 
     atexit.register(_archive_latest_log, log_dir)

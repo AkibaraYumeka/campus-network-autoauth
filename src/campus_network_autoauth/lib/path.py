@@ -6,7 +6,7 @@ def get_runtime_dir() -> Path:
     """Get current runtime dir."""
 
     # binary
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
     # script with pyproject.toml
     else:
@@ -15,6 +15,7 @@ def get_runtime_dir() -> Path:
             if (parent / "pyproject.toml").exists():
                 return parent
         return Path.cwd()
+
 
 RUNTIME_DIR = get_runtime_dir()
 DATA_DIR = RUNTIME_DIR / "data"

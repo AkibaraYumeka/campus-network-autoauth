@@ -13,6 +13,7 @@ DEFAULT_UA = (
     "Chrome/135.0.0.0 Safari/537.36"
 )
 
+
 def _detect_device() -> tuple[str, str]:
     """Return device platforms and OS that fake_useragent supports."""
 
@@ -28,8 +29,11 @@ def _detect_device() -> tuple[str, str]:
     if system == "Linux":
         return "desktop", "Linux"
 
-    logger.warning(f"[network.user_agent] Unknown platform: \"{system}\", falling back to Windows Desktop")
+    logger.warning(
+        f'[network.user_agent] Unknown platform: "{system}", falling back to Windows Desktop'
+    )
     return "desktop", "Windows"
+
 
 def _create_ua(ua_path: Path) -> dict:
     """Create User Agent profile."""
@@ -40,7 +44,7 @@ def _create_ua(ua_path: Path) -> dict:
             browsers=["Chrome"],
             platforms=[device_type],
             os=[device_os],
-            min_version=130
+            min_version=130,
         )
 
         ua_str = ua_pool.chrome
@@ -48,38 +52,48 @@ def _create_ua(ua_path: Path) -> dict:
             raise ValueError("fake_useragent returned an empty User-Agent")
         profile = {"user-agent": ua_str}
     except Exception as e:
-        logger.warning(f"[network.user_agent] Failed to generate User-Agent, falling back to default: error={e}")
+        logger.warning(
+            f"[network.user_agent] Failed to generate User-Agent, falling back to default: error={e}"
+        )
         profile = {"user-agent": DEFAULT_UA}
 
     ua_path.parent.mkdir(parents=True, exist_ok=True)
     with ua_path.open("w", encoding="utf-8") as f:
         json.dump(profile, f, ensure_ascii=False, indent=2)
 
-    logger.info(f"[network.user_agent] Generated User-Agent profile at \"{ua_path}\"")
+    logger.info(f'[network.user_agent] Generated User-Agent profile at "{ua_path}"')
     return profile
+
 
 def _load_ua(ua_path: Path) -> dict | None:
     """Load and validate User Agent profile; return None if missing or invalid."""
 
     if not ua_path.exists():
-        logger.info(f"[network.user_agent] User-Agent profile at \"{ua_path}\" not found, will create one")
+        logger.info(
+            f'[network.user_agent] User-Agent profile at "{ua_path}" not found, will create one'
+        )
         return None
 
     try:
         with ua_path.open("r", encoding="utf-8") as f:
             profile = json.load(f)
     except (OSError, json.JSONDecodeError) as e:
-        logger.error(f"[network.user_agent] Failed to parse User-Agent profile at \"{ua_path}\": error={e}")
+        logger.error(
+            f'[network.user_agent] Failed to parse User-Agent profile at "{ua_path}": error={e}'
+        )
         return None
 
     ua_str = profile.get("user-agent") if isinstance(profile, dict) else None
     if not isinstance(ua_str, str) or not ua_str:
-        logger.warning(f"[network.user_agent] User-Agent profile at \"{ua_path}\" is malformed (missing \"user-agent\")")
+        logger.warning(
+            f'[network.user_agent] User-Agent profile at "{ua_path}" is malformed (missing "user-agent")'
+        )
         return None
 
-    logger.debug(f"[network.user_agent] Loaded User-Agent profile from \"{ua_path}\"")
+    logger.debug(f'[network.user_agent] Loaded User-Agent profile from "{ua_path}"')
 
     return profile
+
 
 def get_pinned_ua(ua_path: Path) -> str:
     """Get pinned User-Agent from profile or generate one."""
@@ -89,5 +103,5 @@ def get_pinned_ua(ua_path: Path) -> str:
         profile = _create_ua(ua_path)
 
     ua_str = profile["user-agent"]
-    logger.debug(f"[network.user_agent] Pinned User-Agent: \"{ua_str}\"")
+    logger.debug(f'[network.user_agent] Pinned User-Agent: "{ua_str}"')
     return ua_str

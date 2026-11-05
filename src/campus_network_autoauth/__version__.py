@@ -5,6 +5,7 @@ PACKAGE_NAME = "campus-network-autoauth"
 __version__ = "0.0.0+dev"
 __description__ = "Description not available."
 
+
 def _load_from_metadata():
     """Load version and description from package metadata."""
 
@@ -13,11 +14,13 @@ def _load_from_metadata():
     except PackageNotFoundError:
         return None
 
+
 def _load_from_pyproject():
     """Load version and description from pyproject.toml."""
 
     try:
         import tomlkit
+
         pyproject_path = Path(__file__).resolve().parent.parent / "pyproject.toml"
         if not pyproject_path.exists():
             return None
@@ -26,6 +29,7 @@ def _load_from_pyproject():
         return project.get("version"), project.get("description")
     except Exception:
         return None
+
 
 _result = _load_from_metadata() or _load_from_pyproject()
 if _result:
