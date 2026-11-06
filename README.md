@@ -4,7 +4,7 @@
 
 An auto-login script for `Dr.COM` campus network authentication.
 
-> Tested on a campus network
+> Tested on a campus network using Dr.COM authentication.
 
 ## Requirements
 
