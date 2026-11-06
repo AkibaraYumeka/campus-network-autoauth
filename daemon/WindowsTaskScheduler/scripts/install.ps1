@@ -16,11 +16,12 @@ if (-not (Test-Path $TemplatePath)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($ExePath)) {
-	foreach ($c in @(
-		(Join-Path $SchedulerDir "campus-network-autoauth.exe"),
-		(Join-Path $RepoDir "campus-network-autoauth.exe")
-	)) {
-		if (Test-Path $c) { $ExePath = $c; break }
+	$ParentDir = Split-Path -Parent $SchedulerDir
+	foreach ($dir in @($SchedulerDir, $ParentDir, $RepoDir)) {
+		$found = Get-ChildItem -Path $dir -Filter "campus-network-autoauth*.exe" `
+					-ErrorAction SilentlyContinue |
+				Select-Object -First 1
+		if ($found) { $ExePath = $found.FullName; break }
 	}
 }
 if ([string]::IsNullOrWhiteSpace($ExePath) -or -not (Test-Path -LiteralPath $ExePath)) {

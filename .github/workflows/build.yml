@@ -91,6 +91,19 @@ jobs:
 
           mv "dist/campus-network-autoauth" "dist_artifacts/campus-network-autoauth-${OS}-${ARCH}${EXT}"
 
+      - name: Pack daemon scripts into artifacts
+        shell: bash
+        run: |
+          if [ "${{ matrix.artifact_os }}" == "windows" ]; then
+            cp -r daemon/WindowsTaskScheduler/* dist_artifacts/
+          fi
+          if [ "${{ matrix.artifact_os }}" == "linux" ]; then
+            mkdir -p dist_artifacts/daemon
+            cp -r daemon/systemd dist_artifacts/daemon/
+            cp -r daemon/NetworkManager dist_artifacts/daemon/
+          fi
+          ls -RF dist_artifacts/
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v7
         with:
