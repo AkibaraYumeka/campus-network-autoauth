@@ -1,5 +1,7 @@
 # Campus Network Autoauth
 
+English | [简体中文](./README.zh-CN.md)
+
 ## Introduction
 
 An auto-login script for `Dr.COM` campus network authentication.
@@ -7,9 +9,9 @@ An auto-login script for `Dr.COM` campus network authentication.
 > Tested on a campus network using Dr.COM authentication.
 
 > [!WARNING]
-> This is a personal learning project, provided as-is with no warranty.
-> Campus network policies vary — **check your school's regulations before using it**.
-> The author is not responsible for any account restriction, network ban, or disciplinary action resulting from use of this script.
+> This is a personal learning project. **Please check your school's network
+> policy before using it** — automated login tools may violate campus network
+> regulations. Use at your own risk.
 
 ## Requirements
 
