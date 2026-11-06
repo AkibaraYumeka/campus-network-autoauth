@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Date>1970-01-01T00:00:00</Date>
+    <Author>{{AUTHOR}}</Author>
+    <URI>\{{TASK_NAME}}</URI>
+    <Description>Auto login for Dr.COM campus network. Runs on boot, logon, and session unlock.</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <SessionStateChangeTrigger>
+      <Enabled>true</Enabled>
+      <StateChange>SessionUnlock</StateChange>
+    </SessionStateChangeTrigger>
+    <BootTrigger>
+      <Enabled>true</Enabled>
+    </BootTrigger>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <UserId>{{USER_SID}}</UserId>
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>true</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT5M</ExecutionTimeLimit>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>C:\Windows\System32\conhost.exe</Command>
+      <Arguments>--headless "{{EXE_PATH}}"</Arguments>
+      <WorkingDirectory>{{WORKING_DIR}}</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>

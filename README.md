@@ -88,7 +88,35 @@ systemctl status campus-network-autoauth.service
 
 #### Windows Task Scheduler
 
-...
+The scheduled task is installed and removed with the helper scripts under `daemon/WindowsTaskScheduler/`.
+Both need to be run with **UAC elevation**:
+
+- Right-click `install.bat` -> **Run as administrator**, or from an elevated Command Prompt: `daemon\WindowsTaskScheduler\install.bat`
+
+Running elevated is only required so that `schtasks /Create` and `schtasks /Delete` succeed on systems with restrictive task-scheduler policies.
+The task itself is registered with `LeastPrivilege` and runs as the current user - it does **not** run elevated.
+
+The script locates `campus-network-autoauth.exe`, reads the current user's SID, fills in `task.xml.template`, and registers a scheduled task named `CampusNetworkAutoauth`.
+The triggers are boot, logon, and session unlock.
+
+If the executable is not next to the script or in the repository root, pass an explicit path:
+
+```sh
+install.bat -ExePath "X:\app\campus-network-autoauth.exe"
+```
+
+To uninstall, right-click `uninstall.bat` -> **Run as administrator**.
+
+Verify manually:
+
+```sh
+schtasks /Query /TN CampusNetworkAutoauth /V /FO LIST
+schtasks /Run /TN CampusNetworkAutoauth
+```
+
+> Note: `BootTrigger` only fires when a user session exists, because the task runs with `InteractiveToken`.
+> `LogonTrigger` and `SessionUnlock` are the effective triggers for most scenarios;
+> The latter also covers resume from sleep, since unlocking restarts the task.
 
 ## Build from source
 
