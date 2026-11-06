@@ -1,0 +1,14 @@
+[Unit]
+Description=Campus Network Auto Authentication Service
+Wants=network-online.target
+After=network-online.target NetworkManager-wait-online.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=path/to/campus-network-autoauth/
+ExecStart=path/to/campus-network-autoauth/campus-network-autoauth
+TimeoutStartSec=120
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
