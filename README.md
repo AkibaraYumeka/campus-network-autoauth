@@ -6,6 +6,11 @@ An auto-login script for `Dr.COM` campus network authentication.
 
 > Tested on a campus network using Dr.COM authentication.
 
+> [!WARNING]
+> This is a personal learning project, provided as-is with no warranty.
+> Campus network policies vary — **check your school's regulations before using it**.
+> The author is not responsible for any account restriction, network ban, or disciplinary action resulting from use of this script.
+
 ## Requirements
 
 - Python 3.13+
